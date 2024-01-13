@@ -1,14 +1,22 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes , Route } from 'react-router-dom';
+
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
+import { PrinterProvider } from './printer_context';
 import MainPage from './main_page/main_page';
-
+import PrinterPage from './printer_page/printer_page'
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <MainPage />
-  </React.StrictMode>
+  <PrinterProvider> 
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/printer/:uid" element={<PrinterPage />} />
+      </Routes>
+    </Router>
+  </PrinterProvider>
 );
 
 

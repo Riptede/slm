@@ -1,5 +1,6 @@
 import './main_page.css';
 import React, { useState } from 'react';
+import {  useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
@@ -10,12 +11,13 @@ import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 
 import AddPrinterDrawerComponent from '../components/add_printer_drawer_component';
 import OptionsPrinterDrawerComponent from '../components/options_printer_drawer_component';
-const PrintListItem = ({ setIsOptionsPrinterDrawerOpen,name, status, uid }) => {
+import { usePrinters } from '../printer_context';
+const PrintListItem = ({printer, changeRoute,setIsOptionsPrinterDrawerOpen }) => {
     return (
         <ListItem disablePadding >
             <ListItemButton>
-
-                <ListItemText primary={`${name},  UID:${uid}`} primaryTypographyProps={{
+                
+                <ListItemText onClick={() => {changeRoute(printer)}} primary={`${printer.name},  UID:${printer.uid}`} primaryTypographyProps={{
                     sx: {
                         color: 'var(--text-color)',
                         fontWeight: 'bold',
@@ -32,7 +34,7 @@ const PrintListItem = ({ setIsOptionsPrinterDrawerOpen,name, status, uid }) => {
                             fontSize: '12px',
                         }
                     }
-                }} secondary={status} />
+                }} secondary={printer.status} />
                 <IconButton onClick={() => { setIsOptionsPrinterDrawerOpen(true) }} >
                     <MenuOutlinedIcon sx={{ color: 'var(--text-color)', fontSize: '30px' }} />
                 </IconButton>
@@ -50,9 +52,10 @@ export default function MainPage() {
     const [uid, setUid] = useState('');
     const [name, setName] = useState('');
 
-    const [printers, setPrinters] = useState([
-        
-    ])
+    const {printers,setPrinters} = usePrinters();
+
+
+
     const addPrinterToggleDrawer = (open) => (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
@@ -63,6 +66,11 @@ export default function MainPage() {
         }
         setIsAddPrinterDrawerOpen(open);
     };
+
+    let navigate = useNavigate();
+    const changeRoute = (printer) =>{
+        navigate(`/printer/${printer.uid}`,)
+    }
 
     const optionsPrinterToggleDrawer = (open) => (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -81,7 +89,7 @@ export default function MainPage() {
     }
 
     return (
-
+        
         <div className="main_page">
             <div className="add_print">
                 <Button onClick={addPrinterToggleDrawer(true)} className='add_print_btn' sx={
@@ -96,7 +104,7 @@ export default function MainPage() {
             <div className="print_list_wrapper">
                 <List>
                     {printers.map((printer) => (
-                        <PrintListItem setIsOptionsPrinterDrawerOpen={setIsOptionsPrinterDrawerOpen} uid={printer.uid} key={printer.idx} name={printer.name} status={printer.status} />
+                        <PrintListItem changeRoute={changeRoute} setIsOptionsPrinterDrawerOpen={setIsOptionsPrinterDrawerOpen} printer={printer}  key={printer.idx}  />
                     ))}
                 </List>
             </div>
@@ -110,8 +118,14 @@ export default function MainPage() {
                     printers={printers}
                     isDrawerOpen={isAddPrinterDrawerOpen}
                     toggleDrawer={addPrinterToggleDrawer} />
-                <OptionsPrinterDrawerComponent printers={printers} setPrinters={setPrinters} toggleDrawer={optionsPrinterToggleDrawer} deletePrinter={deletePrinter} isDrawerOpen={isOptionsPrinterDrawerOpen} />
+                <OptionsPrinterDrawerComponent 
+                    printers={printers} 
+                    setPrinters={setPrinters} 
+                    toggleDrawer={optionsPrinterToggleDrawer} 
+                    deletePrinter={deletePrinter} 
+                    isDrawerOpen={isOptionsPrinterDrawerOpen} />
             </div>
         </div>
+        
     )
 }
