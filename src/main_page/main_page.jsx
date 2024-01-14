@@ -85,7 +85,7 @@ export default function MainPage() {
     const handleUserDataChange = (uid, name) => {
         setIsAddPrinterDrawerOpen(false);
         addPrinterToggleDrawer(false);
-        setPrinters([...printers, { idx: printers.length, name: name, status: 'Ожидает подключения', uid: uid }]);
+        setPrinters([...printers, { id: printers.length, name: name, status: 'Ожидает подключения', uid: uid }]);
     }
 
     return (
@@ -104,7 +104,7 @@ export default function MainPage() {
             <div className="print_list_wrapper">
                 <List>
                     {printers.map((printer) => (
-                        <PrintListItem changeRoute={changeRoute} setIsOptionsPrinterDrawerOpen={setIsOptionsPrinterDrawerOpen} printer={printer}  key={printer.idx}  />
+                        <PrintListItem changeRoute={changeRoute} setIsOptionsPrinterDrawerOpen={setIsOptionsPrinterDrawerOpen} printer={printer}  key={printer.id}  />
                     ))}
                 </List>
             </div>
