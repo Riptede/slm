@@ -64,7 +64,9 @@ const PrinterPage = () => {
             setTasks(tasks); // Обновляем состояние
         }else {
             // Если localTasks пустой, устанавливаем тестовый таск
-            setTasks([{"name":"testTask", "status":"50%", "id":"0", "layers_len":"5"}]);
+            const initialTasks = [{"name":"testTask", "status":"50%", "id":"0", "layers_len":"5"}];
+            setTasks(initialTasks);
+            localStorage.setItem(uid, JSON.stringify(initialTasks));
         }
     }
     useEffect(() => {
