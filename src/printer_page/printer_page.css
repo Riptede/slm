@@ -20,9 +20,7 @@
     gap: 50px;
     color: var(--text-color);
 }
-.printer_about_text {
 
-}
 @media screen and (max-width: 768px) {
     .printer_page {
         max-width: 100%; /* или любая другая фиксированная ширина */

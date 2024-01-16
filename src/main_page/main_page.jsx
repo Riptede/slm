@@ -68,7 +68,7 @@ export default function MainPage() {
     };
 
     let navigate = useNavigate();
-    const changeRoute = (printer) =>{
+    const navigateToPrinter = (printer) =>{
         navigate(`/printer/${printer.uid}`,)
     }
 
@@ -104,7 +104,7 @@ export default function MainPage() {
             <div className="print_list_wrapper">
                 <List>
                     {printers.map((printer) => (
-                        <PrintListItem changeRoute={changeRoute} setIsOptionsPrinterDrawerOpen={setIsOptionsPrinterDrawerOpen} printer={printer}  key={printer.id}  />
+                        <PrintListItem changeRoute={navigateToPrinter} setIsOptionsPrinterDrawerOpen={setIsOptionsPrinterDrawerOpen} printer={printer}  key={printer.id}  />
                     ))}
                 </List>
             </div>
