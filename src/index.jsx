@@ -15,7 +15,7 @@ root.render(
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/printer/:uid" element={<PrinterPage />} />
-        <Route path='/printer/:uid/layers' element={<LayersPage />} />
+        <Route path='/printer/:uid/:project_id' element={<LayersPage />} />
       </Routes>
     </Router>
   </PrinterProvider>

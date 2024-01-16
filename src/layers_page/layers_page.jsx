@@ -2,6 +2,7 @@ import './layers_page.css';
 import React, {useEffect, useState} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import LayerInfoDrawerComponent from '../components/layer_info_drawer_component';
+ 
 
 import Fab from '@mui/material/Fab';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -69,16 +70,28 @@ const LayersPage =() =>{
        
         let matches = pathname.match(/\d+/); // \d+ соответствует одной или нескольким цифрам подряд
         let number = parseInt(matches[0], 10);
-        
         return number
     }
     const uid = parseUid()
 
+    const parseProjectId =() =>{
+        const regex = /\/(\d+)\/?$/
+        const matches = pathname.match(regex);
+        
+        const lastNumber = parseInt(matches[1], 10);
+        return lastNumber
+    }
+
     const parseProjectData =() =>{
         const localProjectsData = localStorage.getItem(uid)
         const projects = JSON.parse(localProjectsData)
-        setProject(projects[0])
-        
+        const projectId = parseProjectId()
+        for (let project of projects){
+           if (project.id == projectId){
+                setProject(project)
+                
+           }
+        }
     }
     const parseLayers = (project) => {
         if (!project || !project.name || !project.id) return;
@@ -96,9 +109,11 @@ const LayersPage =() =>{
             }
         }
     }
+
     useEffect(() =>{
         parseProjectData()
         
+
        
     },[])
     useEffect(() =>{ 

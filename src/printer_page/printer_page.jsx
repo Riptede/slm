@@ -12,12 +12,12 @@ import ListItem from '@mui/material/ListItem';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import './printer_page.css';
 
-const ProjectListItem = ({navigateToProject, task }) => {
+const ProjectListItem = ({navigateToProject, project }) => {
     return (
         <ListItem disablePadding  >
             <ListItemButton >
-                <div className='content' onClick={() => {navigateToProject() }}>
-                        <ListItemText primary={task.name}   primaryTypographyProps={{
+                <div className='content' onClick={() => {navigateToProject({project}) }}>
+                        <ListItemText primary={project.name}   primaryTypographyProps={{
                             sx: {
                                 color: 'var(--text-color)',
                                 fontWeight: 'bold',
@@ -35,7 +35,7 @@ const ProjectListItem = ({navigateToProject, task }) => {
                                 fontSize: '20px',
                                 display: 'flex',
                                 justifyContent:'flex-end',                        
-                            }}}  primary={task.status}></ListItemText>
+                            }}}  primary={project.status}></ListItemText>
                             </div>
                     </ListItemButton>
                 
@@ -60,8 +60,8 @@ const PrinterPage = () => {
     const status = printer.status
     const name = printer.name 
 
-    const navigateToProject =() =>{
-        navigate(`/printer/${uid}/layers`,)
+    const navigateToProject =({project}) =>{
+        navigate(`/printer/${uid}/${project.id}`,)
     }
 
     const [projects, setProjects] = useState([]);
@@ -73,13 +73,14 @@ const PrinterPage = () => {
             setProjects(projects); // Обновляем состояние
         }else {
             // Если localTasks пустой, устанавливаем тестовый таск
-            const initialProjects = [{"name":"testProject", "status":"50%", "id":"0", "layers_len":"5"}];// task = {name:string, status:string, id:num, layers_len:num}
+            const initialProjects = [{"name":"testProject1", "status":"50%", "id":"0", "layers_len":"5"},{"name":"testProject2", "status":"50%", "id":"1", "layers_len":"5"}];// task = {name:string, status:string, id:num, layers_len:num}
             setProjects(initialProjects);
             localStorage.setItem(uid, JSON.stringify(initialProjects));
         }
     }
     useEffect(() => {
          parseProjects()
+        
     },[])
     
     
@@ -112,7 +113,7 @@ const PrinterPage = () => {
             <div className="task_list">
                 <List>
                     {projects.map((project) => (
-                        <ProjectListItem navigateToProject={navigateToProject} task={project} key={project.id} />
+                        <ProjectListItem navigateToProject={navigateToProject} project={project} key={project.id} />
                     ))}
                 </List>
             </div>
