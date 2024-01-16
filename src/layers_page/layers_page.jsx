@@ -1,6 +1,7 @@
 import './layers_page.css';
 import React, {useEffect, useState} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import LayerInfoDrawerComponent from '../components/layer_info_drawer_component';
 
 import Fab from '@mui/material/Fab';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -13,8 +14,19 @@ import ListItem from '@mui/material/ListItem';
 
 
 const LayerListItem = ({layer }) => {
+
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+    const toggleDrawer = (open) => (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+        setIsDrawerOpen(open);
+    }
+
     return (
-        <ListItem disablePadding  >
+        <>
+        <ListItem disablePadding  onClick={toggleDrawer(true)}>
             <ListItemButton >
                         <ListItemText primary={`Слой ${layer.order}`} secondary={layer.timestamp}   primaryTypographyProps={{
                             sx: {
@@ -38,6 +50,9 @@ const LayerListItem = ({layer }) => {
                     </ListItemButton>
                 
         </ListItem>
+        
+        <LayerInfoDrawerComponent layer={layer} isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />
+        </>
     )
 }
 
@@ -45,6 +60,7 @@ const LayerListItem = ({layer }) => {
 //мне надо: layers_len: из uid, completed_layers_len: хз ,name: из uid,layers: как-то потом через axios
 
 const LayersPage =() =>{ 
+    
     const [project, setProject] = useState({})
     const [layers,setLayers] = useState([])
     const location = useLocation();
@@ -59,9 +75,9 @@ const LayersPage =() =>{
     const uid = parseUid()
 
     const parseProjectData =() =>{
-        const localProjectData = localStorage.getItem(uid)
-        const project = JSON.parse(localProjectData)
-        setProject(project[0])
+        const localProjectsData = localStorage.getItem(uid)
+        const projects = JSON.parse(localProjectsData)
+        setProject(projects[0])
         
     }
     const parseLayers = (project) => {
@@ -82,6 +98,8 @@ const LayersPage =() =>{
     }
     useEffect(() =>{
         parseProjectData()
+        
+       
     },[])
     useEffect(() =>{ 
         if (Object.keys(project).length !== 0) {
@@ -114,13 +132,13 @@ const LayersPage =() =>{
                     
                 
             </div> 
-            <div className="layer_list_wrapper">
+            {layers ? <div className="layer_list_wrapper">
                         <List>
-                            {layers.map((layer) => (
-                                <LayerListItem  layer={layer} key={layer.id} />
-                            ))}
+                            {layers.map((layer) => 
+                                <LayerListItem  layer={layer} key={layer.id} />)}
                         </List>
-                    </div>
+                    </div> : <></>}
+            
         </div>
     );
 }

@@ -12,7 +12,7 @@ import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import AddPrinterDrawerComponent from '../components/add_printer_drawer_component';
 import OptionsPrinterDrawerComponent from '../components/options_printer_drawer_component';
 import { usePrinters } from '../printer_context';
-const PrintListItem = ({printer, changeRoute,setIsOptionsPrinterDrawerOpen }) => {
+const PrintListItem = ({printer, changeRoute,handleDeletedPrinter }) => {
     return (
         <ListItem disablePadding >
             <ListItemButton>
@@ -35,7 +35,7 @@ const PrintListItem = ({printer, changeRoute,setIsOptionsPrinterDrawerOpen }) =>
                         }
                     }
                 }} secondary={printer.status} />
-                <IconButton onClick={() => { setIsOptionsPrinterDrawerOpen(true) }} >
+                <IconButton onClick={() => {handleDeletedPrinter(printer.id)}} >
                     <MenuOutlinedIcon sx={{ color: 'var(--text-color)', fontSize: '30px' }} />
                 </IconButton>
             </ListItemButton>
@@ -54,7 +54,12 @@ export default function MainPage() {
 
     const {printers,setPrinters} = usePrinters();
 
+    const [deletePrinterId,setDeletePrinterId] = useState(null)
 
+    const handleDeletedPrinter = (printerId) =>{
+        setDeletePrinterId(printerId)
+        setIsOptionsPrinterDrawerOpen(true)
+    }
 
     const addPrinterToggleDrawer = (open) => (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -78,8 +83,28 @@ export default function MainPage() {
         }
         setIsOptionsPrinterDrawerOpen(open);
     }
-    const deletePrinter = (printers, setPrinters) => {
-        console.log(printers);
+    
+    const deletePrinter = ({deletePrinterId,printers, setPrinters}) => {
+        
+        
+        setPrinters(printers.filter(printer =>{
+            return printer.id !== deletePrinterId
+        }))
+        const deletePrinterFromLocalStorage =() =>{
+            let printer = null
+            for (let i of printers){
+                if (i.id === deletePrinterId){
+                    printer = i
+                }
+            
+            localStorage.removeItem(printer.uid)    
+        }
+        
+        
+        
+        }
+        deletePrinterFromLocalStorage();
+        setIsOptionsPrinterDrawerOpen(false)
     }
 
     const handleUserDataChange = (uid, name) => {
@@ -104,7 +129,7 @@ export default function MainPage() {
             <div className="print_list_wrapper">
                 <List>
                     {printers.map((printer) => (
-                        <PrintListItem changeRoute={navigateToPrinter} setIsOptionsPrinterDrawerOpen={setIsOptionsPrinterDrawerOpen} printer={printer}  key={printer.id}  />
+                        <PrintListItem handleDeletedPrinter={handleDeletedPrinter} changeRoute={navigateToPrinter} setIsOptionsPrinterDrawerOpen={setIsOptionsPrinterDrawerOpen} printer={printer}  key={printer.id}  />
                     ))}
                 </List>
             </div>
@@ -119,6 +144,7 @@ export default function MainPage() {
                     isDrawerOpen={isAddPrinterDrawerOpen}
                     toggleDrawer={addPrinterToggleDrawer} />
                 <OptionsPrinterDrawerComponent 
+                    deletePrinterId={deletePrinterId}
                     printers={printers} 
                     setPrinters={setPrinters} 
                     toggleDrawer={optionsPrinterToggleDrawer} 

@@ -41,6 +41,7 @@ h1,h2, h3, h4, h5, h6{font-style: inherit; font-weight: 400;}
 	--bg-color: rgb(33,33,33);
 	--text-secondary-color:  #d9d9d9;
 	--hint-color:  rgba(115, 115, 115, 0.8);
+	--secondary-bg-color: var( black);
 }
 body{
   background-color: var(--side-color);

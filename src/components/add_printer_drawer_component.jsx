@@ -2,7 +2,7 @@ import React from 'react';
 import Drawer from '@mui/material/Drawer';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-
+import { usePrinters } from '../printer_context';
 
 const AddPrinterDrawerComponent = ({uid, name, setUid, setName,handleUserDataChange,isDrawerOpen, toggleDrawer }) => {
  
@@ -15,7 +15,12 @@ const AddPrinterDrawerComponent = ({uid, name, setUid, setName,handleUserDataCha
   const handleNameChange = (event) => {
     setName(event.target.value);
   }
+
+  const {printers} = usePrinters()
   const handleSubmit =() =>{
+    for (let printer of printers){
+      if (printer.uid === uid) return;
+    }
     if (!uid || !name) {
       return;
     }
