@@ -37,7 +37,7 @@ const PrintListItem = ({printer, changeRoute,handleDeletedPrinter }) => {
                         }
                     }
                 }} secondary={printer.description} />
-                <IconButton onClick={() => {handleDeletedPrinter(printer.id)}} >
+                <IconButton onClick={() => {handleDeletedPrinter(printer.uid)}} >
                     <MenuOutlinedIcon sx={{ color: 'var(--text-color)', fontSize: '30px' }} />
                 </IconButton>
             </ListItemButton>
@@ -69,10 +69,10 @@ export default function MainPage() {
     
     
 
-    const [deletePrinterId,setDeletePrinterId] = useState(null)
+    const [deletePrinterUid,setDeletePrinterUid] = useState(null)
 
-    const handleDeletedPrinter = (printerId) =>{
-        setDeletePrinterId(printerId)
+    const handleDeletedPrinter = (printerUid) =>{
+        setDeletePrinterUid(printerUid)
         setIsOptionsPrinterDrawerOpen(true)
     }
 
@@ -98,26 +98,14 @@ export default function MainPage() {
         setIsOptionsPrinterDrawerOpen(open);
     }
     
-    const deletePrinter = ({deletePrinterId,printers, setPrinters}) => {
-        
-        
-        setPrinters(printers.filter(printer =>{
-            return printer.id !== deletePrinterId
-        }))
-        const deletePrinterFromLocalStorage =() =>{
-            let printer = null
-            for (let i of printers){
-                if (i.id === deletePrinterId){
-                    printer = i
-                }
-            
-            localStorage.removeItem(printer.uid)    
-        }
-        
-        
-        
-        }
-        deletePrinterFromLocalStorage();
+    const deletePrinter = ({deletePrinterUid,printers, setPrinters}) => {
+
+        axios({
+            method:'get',
+            url: `http://158.160.126.165:8000/unsubscribe_from_printer?printer_uid=${deletePrinterUid}&user_id=${user.id}`
+        }).then(() => setPrinters(printers.filter(printer => printer.uid !== deletePrinterUid)))
+        .catch(error => console.error('Ошибка при удалении принтера' + error))
+
         setIsOptionsPrinterDrawerOpen(false)
     }
 
@@ -157,7 +145,7 @@ export default function MainPage() {
                     isDrawerOpen={isAddPrinterDrawerOpen}
                     toggleDrawer={addPrinterToggleDrawer} />
                 <OptionsPrinterDrawerComponent 
-                    deletePrinterId={deletePrinterId}
+                    deletePrinterUid={deletePrinterUid}
                     printers={printers} 
                     setPrinters={setPrinters} 
                     toggleDrawer={optionsPrinterToggleDrawer} 
