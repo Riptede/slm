@@ -1,6 +1,7 @@
 import './main_page.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {  useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Button from '@mui/material/Button';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
@@ -11,7 +12,8 @@ import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 
 import AddPrinterDrawerComponent from '../components/add_printer_drawer_component';
 import OptionsPrinterDrawerComponent from '../components/options_printer_drawer_component';
-import { usePrinters } from '../printer_context';
+import { usePrinters } from '../context/printer_context';
+import { useUser } from '../context/user_context';
 const PrintListItem = ({printer, changeRoute,handleDeletedPrinter }) => {
     return (
         <ListItem disablePadding >
@@ -34,7 +36,7 @@ const PrintListItem = ({printer, changeRoute,handleDeletedPrinter }) => {
                             fontSize: '12px',
                         }
                     }
-                }} secondary={printer.status} />
+                }} secondary={printer.description} />
                 <IconButton onClick={() => {handleDeletedPrinter(printer.id)}} >
                     <MenuOutlinedIcon sx={{ color: 'var(--text-color)', fontSize: '30px' }} />
                 </IconButton>
@@ -46,13 +48,26 @@ const PrintListItem = ({printer, changeRoute,handleDeletedPrinter }) => {
 
 
 export default function MainPage() {
+    const {printers,setPrinters} = usePrinters();
+    const {user} = useUser();
+    
+    useEffect(() =>{
+        axios({
+            method:'get',
+            url:`http://158.160.126.165:8000/get_printers_for_user/${user.id}`,
+
+        }).then(function (response) {
+            setPrinters(response.data.printers)
+        }).catch(error => console.log("Ошибка получения принтеров usera" + error))
+    }, [])
+
     const [isAddPrinterDrawerOpen, setIsAddPrinterDrawerOpen] = useState(false);
     const [isOptionsPrinterDrawerOpen, setIsOptionsPrinterDrawerOpen] = useState(false);
 
     const [uid, setUid] = useState('');
     const [name, setName] = useState('');
 
-    const {printers,setPrinters} = usePrinters();
+    
 
     const [deletePrinterId,setDeletePrinterId] = useState(null)
 
@@ -110,7 +125,7 @@ export default function MainPage() {
     const handleUserDataChange = (uid, name) => {
         setIsAddPrinterDrawerOpen(false);
         addPrinterToggleDrawer(false);
-        setPrinters([...printers, { id: printers.length, name: name, status: 'Ожидает подключения', uid: uid }]);
+        setPrinters([...printers, { id: printers.length, name: name, description: 'Ожидает', uid: uid }]);
     }
 
     return (

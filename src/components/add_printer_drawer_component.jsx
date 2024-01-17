@@ -2,7 +2,7 @@ import React from 'react';
 import Drawer from '@mui/material/Drawer';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { usePrinters } from '../printer_context';
+import { usePrinters } from '../context/printer_context';
 
 const AddPrinterDrawerComponent = ({uid, name, setUid, setName,handleUserDataChange,isDrawerOpen, toggleDrawer }) => {
  

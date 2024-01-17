@@ -1,6 +1,6 @@
 import React, {useEffect,  useState} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { usePrinters } from '../printer_context';
+import { usePrinters } from '../context/printer_context';
  
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Typography from '@mui/material/Typography';
@@ -46,7 +46,11 @@ const ProjectListItem = ({navigateToProject, project }) => {
 const PrinterPage = () => {
     const location = useLocation();
     const { pathname } = location;
-    const uid = pathname.split('/').pop();
+    const parseUid =() =>{
+        const uid = pathname.split('/').pop();
+        return uid
+    }
+    const uid = parseUid()
 
     const {printers} = usePrinters();
     const parsePrinter =(printers) =>{
@@ -73,7 +77,7 @@ const PrinterPage = () => {
             setProjects(projects); // Обновляем состояние
         }else {
             // Если localTasks пустой, устанавливаем тестовый таск
-            const initialProjects = [{"name":"testProject1", "status":"50%", "id":"0", "layers_len":"5"},{"name":"testProject2", "status":"50%", "id":"1", "layers_len":"5"}];// task = {name:string, status:string, id:num, layers_len:num}
+            const initialProjects = [{"name":"testProject1", "status":"50%", "id":"0", "layers_len":"5", "printer_id":"0"},{"name":"testProject2", "status":"50%", "id":"1", "layers_len":"5", "printer_id":"0"}];// task = {name:string, status:string, id:num, layers_len:num}
             setProjects(initialProjects);
             localStorage.setItem(uid, JSON.stringify(initialProjects));
         }

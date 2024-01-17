@@ -14,20 +14,42 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 
 
-const LayerListItem = ({layer }) => {
+const LayerListItem = ({layer,uid, projectId, navigate }) => {
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const toggleDrawer = (open) => (event) => {
+        console.log('open')
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
         setIsDrawerOpen(open);
+        
     }
 
+
+    const createParams = (uid, projectId, layerId) =>{ // uid, projectId, layerId
+        const params = new URLSearchParams({
+            printerUid: uid,
+            projectId: projectId,
+            layerId: layerId
+          }).toString();
+        return params
+    }
+    const updateUrlWithParams =(uid, projectId, layerId, navigate) =>{
+        const params = createParams(uid,projectId,layerId)
+        navigate(`?${params}`, { replace: true });
+
+    }
+
+
+    const listItemOnClick =(uid, projectId, layerId, navigate) =>{
+        setIsDrawerOpen(true)
+        updateUrlWithParams(uid, projectId, layerId, navigate)
+    }
     return (
         <>
-        <ListItem disablePadding  onClick={toggleDrawer(true)}>
+        <ListItem disablePadding  onClick={() =>{listItemOnClick(uid, projectId, layer.id, navigate)}}>
             <ListItemButton >
                         <ListItemText primary={`Слой ${layer.order}`} secondary={layer.timestamp}   primaryTypographyProps={{
                             sx: {
@@ -81,6 +103,7 @@ const LayersPage =() =>{
         const lastNumber = parseInt(matches[1], 10);
         return lastNumber
     }
+    
 
     const parseProjectData =() =>{
         const localProjectsData = localStorage.getItem(uid)
@@ -93,6 +116,7 @@ const LayersPage =() =>{
            }
         }
     }
+    
     const parseLayers = (project) => {
         if (!project || !project.name || !project.id) return;
         const localLayers = localStorage.getItem(`${project.name}${project.id}`)
@@ -123,7 +147,7 @@ const LayersPage =() =>{
     },[project])
     
 
-    let navigate = useNavigate();
+    const navigate = useNavigate();
 
     const navigateBack = () => {
         navigate(`/printer/${uid}`,)
@@ -150,7 +174,7 @@ const LayersPage =() =>{
             {layers ? <div className="layer_list_wrapper">
                         <List>
                             {layers.map((layer) => 
-                                <LayerListItem  layer={layer} key={layer.id} />)}
+                                <LayerListItem navigate={navigate} projectId={project.id} uid={uid} layer={layer} key={layer.id} />)}
                         </List>
                     </div> : <></>}
             
