@@ -50,13 +50,15 @@ const PrintListItem = ({printer, changeRoute,handleDeletedPrinter }) => {
 export default function MainPage() {
     const {printers,setPrinters} = usePrinters();
     const {user} = useUser();
-    
+    const [uid, setUid] = useState('');
+
     useEffect(() =>{
         axios({
             method:'get',
             url:`http://158.160.126.165:8000/get_printers_for_user/${user.id}`,
 
         }).then(function (response) {
+            console.log(response)
             setPrinters(response.data.printers)
         }).catch(error => console.log("Ошибка получения принтеров usera" + error))
     }, [])
@@ -64,9 +66,7 @@ export default function MainPage() {
     const [isAddPrinterDrawerOpen, setIsAddPrinterDrawerOpen] = useState(false);
     const [isOptionsPrinterDrawerOpen, setIsOptionsPrinterDrawerOpen] = useState(false);
 
-    const [uid, setUid] = useState('');
-    const [name, setName] = useState('');
-
+    
     
 
     const [deletePrinterId,setDeletePrinterId] = useState(null)
@@ -82,7 +82,6 @@ export default function MainPage() {
         }
         if (open) {
             setUid('');
-            setName('');
         }
         setIsAddPrinterDrawerOpen(open);
     };
@@ -122,10 +121,10 @@ export default function MainPage() {
         setIsOptionsPrinterDrawerOpen(false)
     }
 
-    const handleUserDataChange = (uid, name) => {
+    const handleUserDataChange = (newPrinter, ) => {
         setIsAddPrinterDrawerOpen(false);
         addPrinterToggleDrawer(false);
-        setPrinters([...printers, { id: printers.length, name: name, description: 'Ожидает', uid: uid }]);
+        setPrinters([...printers, { id: printers.length, description: newPrinter.description, uid: newPrinter.uid, name:newPrinter.name }]);
     }
 
     return (
@@ -141,19 +140,18 @@ export default function MainPage() {
                 } variant="outlined">Добавить принтер</Button>
 
             </div>
-            <div className="print_list_wrapper">
+            {printers ? <div className="print_list_wrapper">
                 <List>
                     {printers.map((printer) => (
                         <PrintListItem handleDeletedPrinter={handleDeletedPrinter} changeRoute={navigateToPrinter} setIsOptionsPrinterDrawerOpen={setIsOptionsPrinterDrawerOpen} printer={printer}  key={printer.id}  />
                     ))}
                 </List>
-            </div>
+            </div> : <></>}
+            
             <div className="drawers">
                 <AddPrinterDrawerComponent
                     uid={uid}
-                    name={name}
                     setUid={setUid}
-                    setName={setName}
                     handleUserDataChange={handleUserDataChange}
                     printers={printers}
                     isDrawerOpen={isAddPrinterDrawerOpen}

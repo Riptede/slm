@@ -31,11 +31,10 @@ export const UserProvider =({children}) =>{
             
         }
     }, [user]);
-    console.log("user",user)
     return (
         
         <UserContext.Provider value={{ user, setUser,  }}>
-            {children}
+            {user ? children : <></>}
         </UserContext.Provider>
     );
 }

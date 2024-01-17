@@ -3,36 +3,55 @@ import Drawer from '@mui/material/Drawer';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { usePrinters } from '../context/printer_context';
+import { useUser } from '../context/user_context';
+import axios from 'axios';
 
-const AddPrinterDrawerComponent = ({uid, name, setUid, setName,handleUserDataChange,isDrawerOpen, toggleDrawer }) => {
- 
+const AddPrinterDrawerComponent = ({ uid, setUid, handleUserDataChange, isDrawerOpen, toggleDrawer }) => {
+
   const handleUidChange = (event) => {
-    const value = event.target.value
-    if (value === '' || /^[0-9]+$/.test(value)) {
-      setUid(value);
-    }
+    setUid(event.target.value)
   }
-  const handleNameChange = (event) => {
-    setName(event.target.value);
-  }
+  const { user } = useUser();
 
-  const {printers} = usePrinters()
-  const handleSubmit =() =>{
-    for (let printer of printers){
-      if (printer.uid === uid) return;
-    }
-    if (!uid || !name) {
+  const { printers, setPrinters } = usePrinters()
+  const handleSubmit = () => {
+
+    if (!uid) {
       return;
     }
-    handleUserDataChange(uid, name);
-  } 
+    axios({
+      method: 'get',
+      url: `http://158.160.126.165:8000/subscribe_for_printer?printer_uid=${uid}&user_id=${user.id}`
+    }).then(function () {
+      
+      axios({
+        method: 'get',
+        url: `http://158.160.126.165:8000/get_printers_for_user/${user.id}`,
+
+      }).then(function (response) {
+        const printersData = response.data.printers;
+        let newPrinter = null;
+        for (let printer of printersData){
+          if (printer.uid ===  uid){
+            newPrinter = printer
+          } 
+        }
+        handleUserDataChange(newPrinter);
+      }).catch(error => console.error("Ошибка получения принтеров usera внутри запроса на подписку:" + error))
+    
+    }).catch(function (error) {
+      console.error('Ошибка при подписке на принтер:' + error)
+    })
+
+    
+  }
 
 
   const drawerContent = () => (
-    
+
     <div>
-      <div className="inputs" style={{margin: '0px 15px'}}>
-          <TextField
+      <div className="inputs" style={{ margin: '0px 15px' }}>
+        <TextField
           fullWidth
           id="uid-input"
           label="Введите UID"
@@ -46,30 +65,14 @@ const AddPrinterDrawerComponent = ({uid, name, setUid, setName,handleUserDataCha
               borderBottomColor: 'var(--text-color)', // Цвет подчеркивания во время фокуса
             },
           }}
-          value ={uid}
+          value={uid}
           onChange={handleUidChange}
         />
-        <TextField
-          fullWidth
-          id="name-input"
-          label="Введите имя"
-          variant="standard"
-          margin="normal"
-          InputLabelProps={{
-            style: { color: 'var(--text-color)' }, // Цвет метки
-          }}
-          sx={{
-            '& .MuiInput-underline:after': {
-              borderBottomColor: 'var(--text-color)', // Цвет подчеркивания во время фокуса
-            },
-          }}
-          value={name}
-          onChange={handleNameChange}
-        />
+
       </div>
-      
-      <div style={{display: 'flex', justifyContent: 'center',   margin: '15px 0px'}}>
-        <Button onClick={handleSubmit} variant="outlined" style={{borderColor: 'var(--text-color)',backgroundColor: 'var(--bg-color)', color: 'var(--text-color)' }}>
+
+      <div style={{ display: 'flex', justifyContent: 'center', margin: '15px 0px' }}>
+        <Button onClick={handleSubmit} variant="outlined" style={{ borderColor: 'var(--text-color)', backgroundColor: 'var(--bg-color)', color: 'var(--text-color)' }}>
           Добавить принтер
         </Button>
       </div>
