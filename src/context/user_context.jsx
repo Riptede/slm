@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import api from '../api';
 const UserContext = createContext();
 
 export const UserProvider =({children}) =>{
@@ -15,7 +16,7 @@ export const UserProvider =({children}) =>{
         
             axios({
                 method: 'post',
-                url: 'http://158.160.126.165:8000/users/',
+                url: `${api}users/`,
                 data:{
                     telegram_chat_id:telegramChatId,
                     printers:[]

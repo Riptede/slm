@@ -1,19 +1,16 @@
 import React from 'react';
+import api from '../api';
 import Drawer from '@mui/material/Drawer';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { usePrinters } from '../context/printer_context';
 import { useUser } from '../context/user_context';
 import axios from 'axios';
 
 const AddPrinterDrawerComponent = ({ uid, setUid, handleUserDataChange, isDrawerOpen, toggleDrawer }) => {
 
-  const handleUidChange = (event) => {
-    setUid(event.target.value)
-  }
+  
   const { user } = useUser();
 
-  const { printers, setPrinters } = usePrinters()
   const handleSubmit = () => {
 
     if (!uid) {
@@ -21,12 +18,12 @@ const AddPrinterDrawerComponent = ({ uid, setUid, handleUserDataChange, isDrawer
     }
     axios({
       method: 'get',
-      url: `http://158.160.126.165:8000/subscribe_for_printer?printer_uid=${uid}&user_id=${user.id}`
+      url: `${api}subscribe_for_printer?printer_uid=${uid}&user_id=${user.id}`
     }).then(function () {
       
       axios({
         method: 'get',
-        url: `http://158.160.126.165:8000/get_printers_for_user/${user.id}`,
+        url: `${api}get_printers_for_user/${user.id}`,
 
       }).then(function (response) {
         const printersData = response.data.printers;
@@ -66,7 +63,7 @@ const AddPrinterDrawerComponent = ({ uid, setUid, handleUserDataChange, isDrawer
             },
           }}
           value={uid}
-          onChange={handleUidChange}
+          onChange={(event) => {setUid(event.target.value)}}
         />
 
       </div>

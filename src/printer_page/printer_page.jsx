@@ -61,7 +61,7 @@ const PrinterPage = () => {
         }        
     }
     const printer = parsePrinter(printers)
-    const status = printer.status
+    
     const name = printer.name 
 
     const navigateToProject =({project}) =>{
@@ -105,7 +105,7 @@ const PrinterPage = () => {
                 </Fab>
                 <div className="printer_about">
                     <Typography variant="h6" className='printer_about_text' gutterBottom>
-                        {status}
+                        {printer.description}
                     </Typography>
                     <Typography variant="h6" className='printer_about_text' gutterBottom>
                         {name}
