@@ -66,7 +66,7 @@ export default function MainPage() {
             localUser.printers = response.data.printers
             localStorage.setItem('user',JSON.stringify(localUser))
         }).catch(error => console.log("Ошибка получения принтеров usera" + error))
-    }, [printers])
+    }, [])
 
     const [isAddPrinterDrawerOpen, setIsAddPrinterDrawerOpen] = useState(false);
     const [isOptionsPrinterDrawerOpen, setIsOptionsPrinterDrawerOpen] = useState(false);
@@ -150,6 +150,8 @@ export default function MainPage() {
                 <AddPrinterDrawerComponent
                     uid={uid}
                     setUid={setUid}
+                    setIsAddPrinterDrawerOpen={setIsAddPrinterDrawerOpen}
+                    addPrinterToggleDrawer={addPrinterToggleDrawer}
                     handleUserDataChange={handleUserDataChange}
                     printers={printers}
                     isDrawerOpen={isAddPrinterDrawerOpen}

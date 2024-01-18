@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 import { useUser } from '../context/user_context';
 import axios from 'axios';
 
-const AddPrinterDrawerComponent = ({ uid, setUid, handleUserDataChange, isDrawerOpen, toggleDrawer }) => {
+const AddPrinterDrawerComponent = ({setIsAddPrinterDrawerOpen,addPrinterToggleDrawer, uid, setUid, handleUserDataChange, isDrawerOpen, toggleDrawer }) => {
 
   
   const { user } = useUser();
@@ -33,7 +33,12 @@ const AddPrinterDrawerComponent = ({ uid, setUid, handleUserDataChange, isDrawer
             newPrinter = printer
           } 
         }
-        handleUserDataChange(newPrinter);
+        if (!!newPrinter){
+          
+          handleUserDataChange(newPrinter);
+        }
+        setIsAddPrinterDrawerOpen(false);
+        addPrinterToggleDrawer(false);
       }).catch(error => console.error("Ошибка получения принтеров usera внутри запроса на подписку:" + error))
     
     }).catch(function (error) {
