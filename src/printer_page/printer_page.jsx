@@ -10,7 +10,11 @@ import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Button from '@mui/material/Button';
+
 import './printer_page.css';
+import axios from 'axios';
+import api from '../api';
 
 const ProjectListItem = ({navigateToProject, project }) => {
     return (
@@ -35,7 +39,7 @@ const ProjectListItem = ({navigateToProject, project }) => {
                                 fontSize: '20px',
                                 display: 'flex',
                                 justifyContent:'flex-end',                        
-                            }}}  primary={project.status}></ListItemText>
+                            }}}  primary={`${project.layers_len} слоёв`}></ListItemText>
                             </div>
                     </ListItemButton>
                 
@@ -69,28 +73,46 @@ const PrinterPage = () => {
     }
 
     const [projects, setProjects] = useState([]);
+    const [page,setPage] = useState(1);
+    const [buttonVisible, setButtonVisible] = useState(false)
     const parseProjects = () => {
-        const localProjects = localStorage.getItem(uid)
         
-        if (localProjects) { // Проверяем, есть ли данные
-            const projects = JSON.parse(localProjects)
-            setProjects(projects); // Обновляем состояние
-        }else {
-            // Если localTasks пустой, устанавливаем тестовый таск
-            const initialProjects = [{"name":"testProject1", "status":"50%", "id":"0", "layers_len":"5", "printer_id":"0"},{"name":"testProject2", "status":"50%", "id":"1", "layers_len":"5", "printer_id":"0"}];// task = {name:string, status:string, id:num, layers_len:num}
-            setProjects(initialProjects);
-            localStorage.setItem(uid, JSON.stringify(initialProjects));
-        }
+        axios({
+            method:'get',
+            url:`${api}get_all_projects_for_printer/${uid}?page=1&limit=10`
+        }).then(response => {
+            setProjects(response.data.results)
+            console.log(response)
+            if (response.data.total_pages > 1){
+                setButtonVisible(true)
+            }
+        })
+        .catch(error => console.error('Ошибка при получении колличества проектов принтера с uid:' + uid + ':' + error))
+
+        
+
+        
     }
     useEffect(() => {
          parseProjects()
         
-    },[])
+    },[uid])
     
-    
+    const projectsUpdateHandle =() =>{
+        axios({
+            method:'get',
+            url:`${api}get_all_projects_for_printer/${uid}?page=${page+1}&limit=10`
+        }).then(response =>{
+            setProjects([...projects, ...response.data.results])
+            setPage(page +1)
+            if (response.data.current_page === response.data.total_pages){
+                setButtonVisible(false)
+            }
+        }).catch(error => console.error('Ошибка при загрузке дополнительеый проектов: ' + error))
+    }
+   
 
-
-    const matches = useMediaQuery('(max-width:768px)'); // MUI хук медиа запрос 
+    const media = useMediaQuery('(max-width:768px)'); // MUI хук медиа запрос 
 
     let navigate = useNavigate();
     const navigateBack = () => {
@@ -99,7 +121,7 @@ const PrinterPage = () => {
     return (
         <div className='printer_page'>
             <div className="printer_top">
-                <Fab onClick={() => { navigateBack() }} size={matches ? 'small' : 'large'}
+                <Fab onClick={() => { navigateBack() }} size={media ? 'small' : 'large'}
                     sx={{ bgcolor: 'var(--text-color)' }}>
                     <ArrowBackIcon sx={{ color: 'var(--bg-color)', }} />
                 </Fab>
@@ -113,15 +135,18 @@ const PrinterPage = () => {
 
                 </div>
             </div>
-
-            <div className="task_list">
+            {projects ?<div className="task_list">
                 <List>
                     {projects.map((project) => (
                         <ProjectListItem navigateToProject={navigateToProject} project={project} key={project.id} />
                     ))}
                 </List>
-            </div>
-
+            </div> : <></>}
+            {buttonVisible ? 
+            <Button variant="contained" style={{ backgroundColor: 'var(--text-color)', color: 'var(--bg-color)' }} onClick={() => {projectsUpdateHandle()}}>
+                Загрузить ещё
+            </Button> : <></>}
+            
         </div>
     )
 }

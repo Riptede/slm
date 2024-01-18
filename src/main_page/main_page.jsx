@@ -59,10 +59,13 @@ export default function MainPage() {
             url:`${api}get_printers_for_user/${user.id}`,
 
         }).then(response =>{
-            console.log(response)
             setPrinters(response.data.printers)
+            user.printers = response.data.printers
+            const localUser = JSON.parse(localStorage.getItem('user'))
+            localUser.printers = response.data.printers
+            localStorage.setItem('user',JSON.stringify(localUser))
         }).catch(error => console.log("Ошибка получения принтеров usera" + error))
-    }, [])
+    }, [printers])
 
     const [isAddPrinterDrawerOpen, setIsAddPrinterDrawerOpen] = useState(false);
     const [isOptionsPrinterDrawerOpen, setIsOptionsPrinterDrawerOpen] = useState(false);
@@ -111,7 +114,7 @@ export default function MainPage() {
     const handleUserDataChange = (newPrinter) => {
         setIsAddPrinterDrawerOpen(false);
         addPrinterToggleDrawer(false);
-        setPrinters([...printers, { id: printers.length, description: newPrinter.description, uid: newPrinter.uid, name:newPrinter.name }]);
+        setPrinters([...printers, { id: newPrinter.id, description: newPrinter.description, uid: newPrinter.uid, name:newPrinter.name }]);
     }
 
     return (

@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import LayerInfoDrawerComponent from '../components/layer_info_drawer_component';
  
-
+import Button from '@mui/material/Button';
 import Fab from '@mui/material/Fab';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Typography from '@mui/material/Typography';
@@ -12,6 +12,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import axios from 'axios';
+import api from '../api';
 
 
 const LayerListItem = ({layer,uid, projectId, navigate }) => {
@@ -19,7 +21,6 @@ const LayerListItem = ({layer,uid, projectId, navigate }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const toggleDrawer = (open) => (event) => {
-        console.log('open')
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
@@ -51,7 +52,7 @@ const LayerListItem = ({layer,uid, projectId, navigate }) => {
         <>
         <ListItem disablePadding  onClick={() =>{listItemOnClick(uid, projectId, layer.id, navigate)}}>
             <ListItemButton >
-                        <ListItemText primary={`Слой ${layer.order}`} secondary={layer.timestamp}   primaryTypographyProps={{
+                        <ListItemText primary={`Слой ${layer.order +1}`} secondary={layer.timestamp}   primaryTypographyProps={{
                             sx: {
                                 color: 'var(--text-color)',
                                 fontWeight: 'bold',
@@ -80,70 +81,66 @@ const LayerListItem = ({layer,uid, projectId, navigate }) => {
 }
 
 
-//мне надо: layers_len: из uid, completed_layers_len: хз ,name: из uid,layers: как-то потом через axios
 
 const LayersPage =() =>{ 
     
     const [project, setProject] = useState({})
     const [layers,setLayers] = useState([])
+    const [buttonVisible, setButtonVisible] = useState(false)
+    const [page,setPage] = useState(1);
+    const [layersCount, setLayersCount] = useState(0);
     const location = useLocation();
     const { pathname } = location;
     const parseUid =() =>{
-       
-        let matches = pathname.match(/\d+/); // \d+ соответствует одной или нескольким цифрам подряд
-        let number = parseInt(matches[0], 10);
-        return number
+
+        const regex = /\/printer\/([^\/]+)\//;
+        const match = pathname.match(regex);
+
+        if (match && match[1]) {
+            const uid = match[1];
+            return uid;
+        } else {
+            console.log('Не удалось извлечь testPrinterUid');
+        }
+
     }
     const uid = parseUid()
-
-    const parseProjectId =() =>{
-        const regex = /\/(\d+)\/?$/
-        const matches = pathname.match(regex);
-        
-        const lastNumber = parseInt(matches[1], 10);
-        return lastNumber
-    }
-    
+    const projectId = pathname.split('/').pop()
 
     const parseProjectData =() =>{
-        const localProjectsData = localStorage.getItem(uid)
-        const projects = JSON.parse(localProjectsData)
-        const projectId = parseProjectId()
-        for (let project of projects){
-           if (project.id == projectId){
-                setProject(project)
-                
-           }
-        }
+
+        axios({
+            method:'get',
+            url:`${api}projects/${projectId}/`
+        }).then(response =>{
+            setProject(response.data)
+        }).catch(error => console.error('Ошибка при получении данных проекта: ' + error))
+
     }
     
-    const parseLayers = (project) => {
-        if (!project || !project.name || !project.id) return;
-        const localLayers = localStorage.getItem(`${project.name}${project.id}`)
-        if (localLayers){
-            const layers = JSON.parse(localLayers)
-            setLayers(layers);
-        }else{
-            
-            const request = undefined//тут будет логика запроса через axios
-            if (!request){
-                const initialLayers = [{"id":"0","project_id":"0","order":"1","svg_image":"https://freesvg.org/img/code-break.png","before_melting_image":"https://freesvg.org/img/code-break.png","after_melting_image":"https://freesvg.org/img/code-break.png","warns":[{"rate":"0","reason":[{"wipeError":"0","metalDivisionError":"1"}]}],"timestamp":"13:00,16.01.2024"}] //interface ILayer {id: number,project_id: number,svg_image: string,  //линк в s3, before_melting_image: string, // линк в s3, after_melting_image: string, // линк в s3, warns?: Array<IWarn>, timestamp: number}
-                setLayers(initialLayers)
-                localStorage.setItem(`${project.name}${project.id}`,JSON.stringify(initialLayers))    
+    const parseLayers = () => {
+        
+        axios({
+            method:'get',
+            url:`${api}get_all_layers_for_project/${projectId}?page=1&limit=10`
+        }).then(response =>{
+            setLayersCount(response.data.size)
+            setLayers(response.data.results)
+            if (response.data.total_pages > 1){
+                setButtonVisible(true)
             }
-        }
+        }).catch(error => console.error('Ошибка при загрузке слоев: ' + error))
+
     }
 
     useEffect(() =>{
         parseProjectData()
-        
-
-       
     },[])
     useEffect(() =>{ 
         if (Object.keys(project).length !== 0) {
-            parseLayers(project);
+            parseLayers();
         }
+       
     },[project])
     
 
@@ -152,6 +149,20 @@ const LayersPage =() =>{
     const navigateBack = () => {
         navigate(`/printer/${uid}`,)
     }
+
+    const layersUpdateHandle =() =>{
+        axios({
+            method:'get',
+            url:`${api}get_all_layers_for_project/${projectId}?page=${page+1}&limit=10`
+        }).then(response => {
+            setLayers([...layers, ...response.data.results])
+            setPage(page +1)
+            if (response.data.current_page === response.data.total_pages){
+                setButtonVisible(false)
+            }
+        })
+    }
+
     const matches = useMediaQuery('(max-width:768px)');
     return(
         <div className="layers_page">
@@ -162,7 +173,7 @@ const LayersPage =() =>{
                 </Fab>
                 <div className="layer_about">
                 <Typography variant="h6" className='printer_about_text' gutterBottom>
-                        <p className="about_text"> 0 слоев из {project.layers_len}</p>   
+                        <p className="about_text"> {layersCount} слоев из {project.layers_len}</p>   
                     </Typography>
                     <Typography variant="h6" className='printer_about_text' gutterBottom>
                         <p className="about_text">{project.name}</p>    
@@ -177,6 +188,10 @@ const LayersPage =() =>{
                                 <LayerListItem navigate={navigate} projectId={project.id} uid={uid} layer={layer} key={layer.id} />)}
                         </List>
                     </div> : <></>}
+            {buttonVisible ? 
+            <Button variant="contained" style={{ backgroundColor: 'var(--text-color)', color: 'var(--bg-color)' }} onClick={() => {layersUpdateHandle()}}>
+                Загрузить ещё
+            </Button> : <></>}
             
         </div>
     );
