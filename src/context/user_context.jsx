@@ -9,6 +9,15 @@ export const UserProvider =({children}) =>{
         
         return localData ? JSON.parse(localData) : null;
 
+        // const telegramUserId = window.Telegram.WebApp.initDataUnsafe.user.id
+        // const getUser = axios({
+        //     method:'get',
+        //     url:`${api}users/${telegramUserId}`
+        // }).then(res =>{
+        //     return res.data
+        // }).catch(
+        //     console.log('не найден')
+        // )
     })
     useEffect(() => {
         if (!user){
