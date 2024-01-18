@@ -183,12 +183,14 @@ const LayersPage =() =>{
                     
                 
             </div> 
-            {layers ? <div className="layer_list_wrapper">
+            {layers.length ? <div className="layer_list_wrapper">
                         <List>
                             {layers.map((layer) => 
                                 <LayerListItem navigate={navigate} projectId={projectId} uid={uid} layer={layer} key={layer.id} />)}
                         </List>
-                    </div> : <></>}
+                    </div> : <div style={{width:'100%',height:'90vh'}}> <Typography variant="h6" sx={{color:'var(--text-color)', display:'flex', alignItems:'center', justifyContent:'center', width:'100%',height:'100%'}} gutterBottom>
+                        Похоже тут ничего нет
+                    </Typography></div>}
             {buttonVisible ? 
             <>
             <Button variant="contained" style={{ backgroundColor: 'var(--text-color)', color: 'var(--bg-color)',}}  onClick={() => {layersUpdateHandle()}}>

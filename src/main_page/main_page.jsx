@@ -10,6 +10,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import IconButton from '@mui/material/IconButton';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
+import Typography from '@mui/material/Typography';
 
 import AddPrinterDrawerComponent from '../components/add_printer_drawer_component';
 import OptionsPrinterDrawerComponent from '../components/options_printer_drawer_component';
@@ -130,7 +131,7 @@ export default function MainPage() {
                 } variant="outlined">Добавить принтер</Button>
 
             </div>
-            {printers ? <div className="print_list_wrapper">
+            {printers.length ? <div className="print_list_wrapper">
                 <List>
                     {printers.map((printer) => (
                         <PrintListItem 
@@ -141,7 +142,9 @@ export default function MainPage() {
                         key={printer.id}  />
                     ))}
                 </List>
-            </div> : <></>}
+            </div> : <div style={{width:'100%',height:'90vh'}}> <Typography variant="h6" sx={{color:'var(--text-color)', display:'flex', alignItems:'center', justifyContent:'center', width:'100%',height:'100%'}} gutterBottom>
+                        Похоже тут ничего нет
+                    </Typography></div>}
             
             <div className="drawers">
                 <AddPrinterDrawerComponent

@@ -87,7 +87,7 @@ const PrinterPage = () => {
                 setButtonVisible(true)
             }
         })
-        .catch(error => console.error('Ошибка при получении колличества проектов принтера с uid:' + uid + ':' + error))
+        .catch(error => console.error('Ошибка при получении проектов принтера с uid:' + uid + ':' + error))
 
         
 
@@ -135,14 +135,16 @@ const PrinterPage = () => {
 
                 </div>
             </div>
-            {projects ?<div className="task_list">
+            {projects.length ?<div className="task_list">
                 <List>
                     {projects.map((project) => (
                         <ProjectListItem navigateToProject={navigateToProject} project={project} key={project.id} />
                     ))}
                 </List>
-            </div> : <></>}
-            {buttonVisible ? 
+            </div> : <div style={{width:'100%',height:'90vh'}}> <Typography variant="h6" sx={{color:'var(--text-color)', display:'flex', alignItems:'center', justifyContent:'center', width:'100%',height:'100%'}} gutterBottom>
+                        Похоже тут ничего нет
+                    </Typography></div>}
+            {buttonVisible  ? 
             <>
             <Button variant="contained" style={{ backgroundColor: 'var(--text-color)', color: 'var(--bg-color)' }} onClick={() => {projectsUpdateHandle()}}>
                 Загрузить ещё
