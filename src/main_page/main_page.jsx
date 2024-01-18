@@ -126,7 +126,7 @@ export default function MainPage() {
                     {
                         color: 'var(--text-color)',
                         borderColor: 'var(--text-color)',
-                        padding: '20px 40px',
+                        padding: '30px 50px',
                     }
                 } variant="outlined">Добавить принтер</Button>
 
