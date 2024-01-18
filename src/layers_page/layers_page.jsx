@@ -17,12 +17,14 @@ import api from '../api';
 
 
 const LayerListItem = ({layer,uid, projectId, navigate }) => {
-
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const toggleDrawer = (open) => (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
+        }
+        if (!open){
+            navigate(``, { replace: true });
         }
         setIsDrawerOpen(open);
         
@@ -162,7 +164,6 @@ const LayersPage =() =>{
             }
         })
     }
-
     const matches = useMediaQuery('(max-width:768px)');
     return(
         <div className="layers_page">
@@ -185,13 +186,18 @@ const LayersPage =() =>{
             {layers ? <div className="layer_list_wrapper">
                         <List>
                             {layers.map((layer) => 
-                                <LayerListItem navigate={navigate} projectId={project.id} uid={uid} layer={layer} key={layer.id} />)}
+                                <LayerListItem navigate={navigate} projectId={projectId} uid={uid} layer={layer} key={layer.id} />)}
                         </List>
                     </div> : <></>}
             {buttonVisible ? 
-            <Button variant="contained" style={{ backgroundColor: 'var(--text-color)', color: 'var(--bg-color)' }} onClick={() => {layersUpdateHandle()}}>
+            <>
+            <Button variant="contained" style={{ backgroundColor: 'var(--text-color)', color: 'var(--bg-color)',}}  onClick={() => {layersUpdateHandle()}}>
                 Загрузить ещё
-            </Button> : <></>}
+            </Button>
+            
+            <div style={{height:'40px', width:'100%'}}></div>
+            </> : <></>}
+            
             
         </div>
     );

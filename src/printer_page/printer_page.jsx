@@ -143,9 +143,12 @@ const PrinterPage = () => {
                 </List>
             </div> : <></>}
             {buttonVisible ? 
+            <>
             <Button variant="contained" style={{ backgroundColor: 'var(--text-color)', color: 'var(--bg-color)' }} onClick={() => {projectsUpdateHandle()}}>
                 Загрузить ещё
-            </Button> : <></>}
+            </Button>
+            <div style={{height:'40px', width:'100%'}}></div>
+            </> : <></>}
             
         </div>
     )
