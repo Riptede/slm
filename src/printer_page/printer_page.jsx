@@ -18,7 +18,7 @@ import api from '../api';
 
 const ProjectListItem = ({navigateToProject, project }) => {
     return (
-        <ListItem disablePadding  >
+        <ListItem disablePadding  style={{backgroundColor:'#332D41', borderRadius:'15px', marginBottom:'10px'}}>
             <ListItemButton >
                 <div className='content' onClick={() => {navigateToProject({project}) }}>
                         <ListItemText primary={project.name}   primaryTypographyProps={{
@@ -135,7 +135,7 @@ const PrinterPage = () => {
 
                 </div>
             </div>
-            {projects.length ?<div className="task_list">
+            {projects.length ?<div className="task_list" style={{padding:'0px 5px'}}>
                 <List>
                     {projects.map((project) => (
                         <ProjectListItem navigateToProject={navigateToProject} project={project} key={project.id} />

@@ -15,7 +15,7 @@ import ListItem from '@mui/material/ListItem';
 import axios from 'axios';
 import api from '../api';
 
-
+//нужно чтобы бот находил по id юзера и мог написать ему
 const LayerListItem = ({layer,uid, projectId, navigate }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -52,7 +52,7 @@ const LayerListItem = ({layer,uid, projectId, navigate }) => {
     }
     return (
         <>
-        <ListItem disablePadding  onClick={() =>{listItemOnClick(uid, projectId, layer.id, navigate)}}>
+        <ListItem disablePadding style={{backgroundColor:'#332D41', borderRadius:'15px', marginBottom:'10px'}} onClick={() =>{listItemOnClick(uid, projectId, layer.id, navigate)}}>
             <ListItemButton >
                         <ListItemText primary={`Слой ${layer.order +1}`} secondary={layer.timestamp}   primaryTypographyProps={{
                             sx: {
@@ -183,7 +183,7 @@ const LayersPage =() =>{
                     
                 
             </div> 
-            {layers.length ? <div className="layer_list_wrapper">
+            {layers.length ? <div className="layer_list_wrapper" style={{padding:'0px 5px'}}>
                         <List>
                             {layers.map((layer) => 
                                 <LayerListItem navigate={navigate} projectId={projectId} uid={uid} layer={layer} key={layer.id} />)}

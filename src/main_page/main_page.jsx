@@ -11,6 +11,7 @@ import ListItem from '@mui/material/ListItem';
 import IconButton from '@mui/material/IconButton';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import Typography from '@mui/material/Typography';
+import AddIcon from '@mui/icons-material/Add';
 
 import AddPrinterDrawerComponent from '../components/add_printer_drawer_component';
 import OptionsPrinterDrawerComponent from '../components/options_printer_drawer_component';
@@ -18,7 +19,7 @@ import { usePrinters } from '../context/printer_context';
 import { useUser } from '../context/user_context';
 const PrintListItem = ({printer, navigateToPrinter,handleDeletedPrinter }) => {
     return (
-        <ListItem disablePadding >
+        <ListItem disablePadding style={{backgroundColor:'#332D41', borderRadius:'15px', marginBottom:'10px'}}>
             <ListItemButton>
                 
                 <ListItemText onClick={() => {navigateToPrinter(printer)}} primary={`${printer.name},  UID:${printer.uid}`} primaryTypographyProps={{
@@ -121,17 +122,27 @@ export default function MainPage() {
     return (
         
         <div className="main_page">
-            <div className="add_print">
-                <Button onClick={addPrinterToggleDrawer(true)} className='add_print_btn' sx={
+            <div className="add_print" style={{
+                width:'100%',
+                display:'flex',
+                justifyContent:'center',
+                alignItems:'center'
+            }}>
+                <Button onClick={addPrinterToggleDrawer(true)} className='add_print_btn' style={
                     {
+                        display:'flex',
+                        justifyContent:'space-between',
+                        alignItems:'center',
+                        width:'150px',
+                        height:'60px',
                         color: 'var(--text-color)',
                         borderColor: 'var(--text-color)',
-                        padding: '30px 50px',
-                    }
-                } variant="outlined">Добавить принтер</Button>
+                        borderRadius:'30px'
+                    }   
+                } variant="outlined"><AddIcon fontSize="large"/> Добавить принтер</Button>
 
             </div>
-            {printers.length ? <div className="print_list_wrapper">
+            {printers.length ? <div className="print_list_wrapper" style={{padding:'0px 5px'}}>
                 <List>
                     {printers.map((printer) => (
                         <PrintListItem 

@@ -5,12 +5,13 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { useUser } from '../context/user_context';
 import axios from 'axios';
+import { usePrinters } from '../context/printer_context';
 
 const AddPrinterDrawerComponent = ({setIsAddPrinterDrawerOpen,addPrinterToggleDrawer, uid, setUid, handleUserDataChange, isDrawerOpen, toggleDrawer }) => {
 
   
   const { user } = useUser();
-
+  const {printers} = usePrinters();
   const handleSubmit = () => {
 
     if (!uid) {
@@ -33,9 +34,19 @@ const AddPrinterDrawerComponent = ({setIsAddPrinterDrawerOpen,addPrinterToggleDr
             newPrinter = printer
           } 
         }
+        
+        
         if (!!newPrinter){
-          
-          handleUserDataChange(newPrinter);
+          let flag = true
+          for (let printer of printers){
+            if (printer.id === newPrinter.id){
+              flag = false
+            }
+          }
+          if (flag){
+            handleUserDataChange(newPrinter);
+          }
+          flag = true
         }
         setIsAddPrinterDrawerOpen(false);
         addPrinterToggleDrawer(false);
