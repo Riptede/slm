@@ -4,20 +4,19 @@ import api from '../api';
 const UserContext = createContext();
 
 export const UserProvider =({children}) =>{
+    const telegramUserId = window.Telegram.WebApp.initDataUnsafe.user.id
     const [user,setUser] = useState(() =>{
-        const localData = localStorage.getItem('user');
         
-        return localData ? JSON.parse(localData) : null;
 
-        // const telegramUserId = window.Telegram.WebApp.initDataUnsafe.user.id
-        // const getUser = axios({
-        //     method:'get',
-        //     url:`${api}users/${telegramUserId}`
-        // }).then(res =>{
-        //     return res.data
-        // }).catch(
-        //     console.log('не найден')
-        // )
+        
+        axios({
+            method:'get',
+            url:`${api}users/${telegramUserId}`
+        }).then(res =>{
+            return res.data
+        }).catch(error => {
+             return null;
+        })
     })
     useEffect(() => {
         if (!user){
@@ -40,6 +39,7 @@ export const UserProvider =({children}) =>{
             });
             
         }
+        console.log(window.Telegram.WebApp)
     }, [user]);
     return (
         
